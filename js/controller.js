@@ -1,6 +1,8 @@
 
 //Objeto  de acceso a datos  
 const persistence = new Persistence();
+let esNuevo = true;
+let indice = -1;
 
 /* MENU*/
 $("ul li a").click(function(){
@@ -24,8 +26,17 @@ $("form").submit( function( evento ){
      	email:  $("#email").val(),
      	direccion:  $("#direccion").val()
      };
+     if( esNuevo ){
+     	persistence.guardar( persona );
+     }else {
+     	persistence.modificar(persona, indice);
+     }
 
-     persistence.guardar( persona );
+      
+
+
+
+     
 
 
       //limpia el formulario
@@ -34,7 +45,32 @@ $("form").submit( function( evento ){
      cargarTabla();
 
 } );
+//mdifica el valor de esNuevo a true
+$('#btnCancelar').click(function(event) {
+	esNuevo = true;
 
+});
+
+function editar( btn ){
+	esNuevo = false;
+    indice = $(btn).parent().parent().index();
+	let contacto = persistence.recuperarPorIndice( indice );
+
+	$( "#nombre" ).val( contacto.nombre );
+	$( "#telefono" ).val( contacto.telefono );
+	$( "#email" ).val( contacto.email );
+	$( "#direccion" ).val( contacto.direccion );
+
+	$("#reg").click();
+
+}
+
+function eliminar(btn){
+	indice = $(btn).parent().parent().index();
+	persistence.eliminar(indice);
+	cargarTabla();
+
+}
 
 
 
@@ -63,14 +99,14 @@ function cargarTabla(){
                                 <td>${elem.email}</td>
                                 <td>${elem.direccion}</td>
                                 <td>
-                                    <button onclick="" class="bnt
+                                    <button onclick="editar(this)" class="bnt
                                      btn-outline-warning btn-sm"
                                       data-toggle="tooltip"
                                        data-placement="top"
                                         title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button onclick="" class="bnt
+                                    <button onclick="eliminar(this)" class="bnt
                                      btn-outline-danger btn-sm"
                                       data-toggle="tooltip" data-placement="top"
                                        title="Eliminar">
